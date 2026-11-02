@@ -34,6 +34,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install buildozer cython==0.29.36
 
+        # Android SDK License accept karne ke liye
+        yes | sdkmanager --licenses
+        export ANDROID_SDK_ROOT=$ANDROID_HOME
+
     - name: Extract project
       run: |
         unzip ELITE_EMPIRE_SAFE_PROJECT.zip -d project
