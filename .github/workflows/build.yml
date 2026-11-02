@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout Code
       uses: actions/checkout@v4
 
     - name: Setup Java
@@ -22,7 +22,7 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Install dependencies
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -31,22 +31,33 @@ jobs:
           libncurses5-dev libncursesw5-dev \
           libtinfo6 cmake
 
+    - name: Install Buildozer & Cython
+      run: |
         python -m pip install --upgrade pip
+        # Timeout badha diya taaki network fail na ho
+        export PIP_DEFAULT_TIMEOUT=100
         pip install buildozer cython==0.29.36
 
-    - name: Extract project
+    - name: Extract Project
       run: |
         unzip ELITE_EMPIRE_SAFE_PROJECT.zip -d project
+        # Exact folder path jahan buildozer.spec hai
         cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
         ls -la
 
     - name: Build APK
       run: |
         cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
-        # System ko force kar rahe hain ki sirf Python 3.11 use kare
+        
+        # Force system to use Python 3.11 only
         export PATH="/opt/hostedtoolcache/Python/3.11.*/x64/bin:$PATH"
         export PYTHON="/opt/hostedtoolcache/Python/3.11.*/x64/bin/python3"
-        # Automatic license accept aur build start
+        
+        # Network timeout handling
+        export PIP_DEFAULT_TIMEOUT=100
+        export GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
+        
+        # Auto-accept licenses and build
         yes | buildozer android debug
 
     - name: Upload APK
