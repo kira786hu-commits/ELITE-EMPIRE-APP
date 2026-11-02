@@ -39,7 +39,6 @@ jobs:
     - name: Extract Project
       run: |
         unzip ELITE_EMPIRE_SAFE_PROJECT.zip -d project
-        cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
 
     - name: Build APK
       run: |
@@ -49,7 +48,7 @@ jobs:
         export PIP_DEFAULT_TIMEOUT=100
         yes | buildozer android debug
 
-    - name: Upload APK to GitHub
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: ELITE-EMPIRE-APK
