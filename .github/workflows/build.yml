@@ -43,7 +43,10 @@ jobs:
     - name: Build APK
       run: |
         cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
-        # License auto-accept karne ke liye YES bhej rahe hain
+        # System ko force kar rahe hain ki sirf Python 3.11 use kare
+        export PATH="/opt/hostedtoolcache/Python/3.11.*/x64/bin:$PATH"
+        export PYTHON="/opt/hostedtoolcache/Python/3.11.*/x64/bin/python3"
+        # Automatic license accept aur build start
         yes | buildozer android debug
 
     - name: Upload APK
