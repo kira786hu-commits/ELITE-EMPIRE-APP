@@ -38,27 +38,29 @@ jobs:
         export PIP_DEFAULT_TIMEOUT=100
         pip install buildozer cython==0.29.36
 
-    - name: Extract Project
+    - name: Extract and Auto-Fix Project
       run: |
         unzip ELITE_EMPIRE_SAFE_PROJECT.zip -d project
+        cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
+        
+        # YAHAN MAGIC HO RAHA HAI: Bina zip edit kiye, spec file me api change
+        sed -i 's/^android.api = .*/android.api = 24/' buildozer.spec
+        sed -i 's/^android.minapi = .*/android.minapi = 24/' buildozer.spec
+        sed -i 's/^android.ndk_api = .*/android.ndk_api = 24/' buildozer.spec
+        
+        echo "Spec file updated:"
+        grep "android.api\|android.minapi\|android.ndk_api" buildozer.spec
 
     - name: Build APK
       run: |
         cd project/ELITE_EMPIRE_SAFE_PROJECT/ELITE_EMPIRE
-        
-        # Force Python 3.11
         export PATH="/opt/hostedtoolcache/Python/3.11.*/x64/bin:$PATH"
         export PYTHON="/opt/hostedtoolcache/Python/3.11.*/x64/bin/python3"
-        
-        # Network Timeout Handling
         export PIP_DEFAULT_TIMEOUT=100
         export GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
-        
-        # Force system autoconf
         export AUTOCONF=/usr/bin/autoconf
         export AUTOMAKE=/usr/bin/automake
         
-        # Auto-accept licenses and build
         yes | buildozer android debug
 
     - name: Upload APK
